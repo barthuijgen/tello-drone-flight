@@ -5,73 +5,11 @@
   <body>
     <div>
       <div id="status">Status: connecting</div>
-      <!-- <hr />
-      <button onclick="socket.send('start')">start</button>
-      <button onclick="socket.send('stop')">stop</button> -->
       <hr />
-      drone 1
-      <button onclick="setActive(0,true)">takeoff</button>
-      <button onclick="setActive(0,false)">land</button>
-      <hr />
-      drone 2
-      <button onclick="setActive(1,true)">takeoff</button>
-      <button onclick="setActive(1,false)">land</button>
-      <hr />
-      drone 3
-      <button onclick="setActive(2,true)">takeoff</button>
-      <button onclick="setActive(2,false)">land</button>
-      <hr />
-      <div style="display: flex">
-        <pre id="telemetry0"></pre>
-        <pre id="telemetry1"></pre>
-        <pre id="telemetry2"></pre>
-      </div>
+      <div id="telemetry" style="display: flex"></div>
+      <canvas id="video-canvas"></canvas>
     </div>
-    <script>
-      let state = {};
-      let telemetry = {};
-      let socket = null;
-      const setActive = (drone, active) => {
-        setState(drone, { ...state, active });
-      };
-      const setMid = (mid) => {
-        setState({ ...state, targetMid: mid });
-      };
-      const setState = (drone, _state) => {
-        state = _state;
-        socket.send(JSON.stringify({ drone, state: _state }));
-      };
-
-      function connect() {
-        socket = new WebSocket("ws://127.0.0.1:8887");
-        socket.onmessage = (data) => {
-          telemetry = JSON.parse(data.data);
-          document.getElementById("telemetry" + telemetry.drone).innerHTML =
-            JSON.stringify(
-              {
-                drone: telemetry.drone,
-                battery: telemetry.telemetry.bat,
-                state: telemetry.state,
-                ...telemetry.telemetry,
-              },
-              null,
-              2
-            );
-        };
-        socket.onopen = () => {
-          document.getElementById("status").innerHTML = "Status: connected";
-        };
-        socket.onclose = () => {
-          document.getElementById("status").innerHTML = "Status: closed";
-        };
-      }
-
-      setInterval(() => {
-        if (socket && socket.readyState !== 1) {
-          connect();
-        }
-      }, 1000);
-      connect();
-    </script>
+    <script type="text/javascript" src="./JSMpeg.js"></script>
+    <script type="module" src="./src/client.ts"></script>
   </body>
 </html>
