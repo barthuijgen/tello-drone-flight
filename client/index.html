@@ -1,15 +1,14 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title>drone</title>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IO drone flight</title>
   </head>
   <body>
-    <div>
-      <div id="status">Status: connecting</div>
-      <hr />
-      <div id="telemetry" style="display: flex"></div>
-      <canvas id="video-canvas"></canvas>
-    </div>
-    <script type="text/javascript" src="./JSMpeg.js"></script>
-    <script type="module" src="./src/client.ts"></script>
+    <div id="root"></div>
+    <script type="text/javascript" src="/jsmpeg.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

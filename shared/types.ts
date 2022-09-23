@@ -37,6 +37,10 @@ type PayloadState = { type: "state"; payload: State };
 type PayloadStart = { type: "start"; payload: { hostname: string } };
 type PayloadStop = { type: "stop"; payload: { hostname: string } };
 type PayloadEmergency = { type: "emergency"; payload: { hostname?: string } };
+type PayloadCommand = {
+  type: "command";
+  payload: { hostname: string; command: string };
+};
 type PayloadStream = {
   type: "stream";
   payload: { hostname: string; enabled: boolean };
@@ -46,5 +50,6 @@ export type Payload =
   | PayloadState
   | PayloadStart
   | PayloadStop
+  | PayloadCommand
   | PayloadStream
   | PayloadEmergency;

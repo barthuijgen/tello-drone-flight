@@ -32,6 +32,10 @@ server.onMessage.attach((message) => {
       drone.send(commands.streamoff());
     }
   }
+  if (message.type === "command") {
+    const drone = manager.getDrone(message.payload.hostname);
+    drone.command(message.payload.command);
+  }
 });
 
 manager.registerDrone("192.168.87.20");

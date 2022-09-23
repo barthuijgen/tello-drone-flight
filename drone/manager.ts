@@ -33,7 +33,7 @@ export class DroneManager {
     // Prevent drones from sleeping by no commands
     setInterval(() => {
       this.drones.forEach(
-        (drone) => drone.active && drone.send(readCommands.battery)
+        (drone) => drone.active && drone.command(readCommands.battery)
       );
     }, 5000);
   }
@@ -61,10 +61,10 @@ export class DroneManager {
     await drone.send(commands.ap(ssid, pass));
   }
 
-  sendCommand(hostname: string, message: string) {
+  async sendCommand(hostname: string, message: string) {
     try {
       const encoder = new TextEncoder();
-      this.commandConn.send(encoder.encode(message), {
+      await this.commandConn.send(encoder.encode(message), {
         port: commandPort,
         transport,
         hostname,
