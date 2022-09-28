@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "evt": "https://deno.land/x/evt@v2.4.2/mod.ts",
+    "log": "https://deno.land/std@0.157.0/log/mod.ts",
+    "server": "https://deno.land/std@0.157.0/http/server.ts",
+    "websocket": "https://deno.land/x/websocket@v0.1.4/mod.ts"
+  }
+}

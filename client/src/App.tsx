@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { State } from "../../shared/types";
+import { DroneView } from "./drone-view/DroneView";
 import { useWebsocketClient } from "./hooks/socket";
 import { VideoSteam } from "./video";
 
@@ -89,6 +90,11 @@ export const App = () => {
           </button>
           {drone.telemetry && (
             <>
+              <DroneView
+                x={drone.telemetry.pitch}
+                y={-drone.telemetry.yaw}
+                z={-drone.telemetry.roll}
+              />
               <div>
                 <span
                   style={{

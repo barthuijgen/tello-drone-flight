@@ -1,4 +1,5 @@
-import { Evt } from "https://deno.land/x/evt@v2.4.2/mod.ts";
+import { Evt } from "evt";
+import * as log from "log";
 import { commands, readCommands } from "./commands.ts";
 import { Drone } from "./drone.ts";
 import { State } from "../shared/types.ts";
@@ -30,12 +31,13 @@ export class DroneManager {
     setInterval(() => {
       this.updateState();
     }, 500);
+
     // Prevent drones from sleeping by no commands
     setInterval(() => {
       this.drones.forEach(
         (drone) => drone.active && drone.command(readCommands.battery)
       );
-    }, 5000);
+    }, 10000);
   }
 
   getDrone(id: string | number) {
@@ -50,6 +52,7 @@ export class DroneManager {
   }
 
   registerDrone(hostname: string) {
+    log.info("Registering drone", { drone: hostname });
     const drone = new Drone(this, hostname);
     this.drones.set(hostname, drone);
     return drone;
@@ -58,19 +61,21 @@ export class DroneManager {
   async connectToAccessPoint(ssid: string, pass: string) {
     const drone = this.registerDrone("192.168.10.1");
     await drone.start();
-    await drone.send(commands.ap(ssid, pass));
+    await drone.command(commands.ap(ssid, pass));
   }
 
   async sendCommand(hostname: string, message: string) {
     try {
       const encoder = new TextEncoder();
+      log.debug(`[SENDING] "${message}"`);
       await this.commandConn.send(encoder.encode(message), {
         port: commandPort,
         transport,
         hostname,
       });
     } catch (error) {
-      console.log("Failed to send command to drone", error);
+      log.error("Failed to send command to drone", { drone: hostname });
+      throw error;
     }
   }
 

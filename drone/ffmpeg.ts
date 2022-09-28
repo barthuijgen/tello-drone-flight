@@ -1,30 +1,46 @@
-import { serve } from "https://deno.land/std@0.157.0/http/server.ts";
+import { serve } from "server";
+import * as log from "log";
 import { Server } from "./websocketserver.ts";
 
 const droneCameraPort = 11111;
 const streamWsPort = 8893;
 
 export class FFMPEG {
-  started = false;
+  startedWebserver = false;
+  startedFfmpeg = false;
+  process: Deno.Process | null = null;
 
   constructor(private server: Server) {}
 
   start() {
-    if (this.started) return;
-    this.started = true;
+    this.startWebserver();
+    this.startFfmpeg();
+  }
+
+  stop() {
+    this.stopFfmpeg();
+  }
+
+  startWebserver() {
+    if (this.startedWebserver) return;
+    this.startedWebserver = true;
+
+    const handler = async (request: Request): Promise<Response> => {
+      if (request.body) {
+        for await (const chunk of request.body) {
+          this.server.broadcast(chunk);
+        }
+      }
+      return new Response("", { status: 200 });
+    };
+    serve(handler, { port: streamWsPort });
+  }
+
+  startFfmpeg() {
+    if (this.startedFfmpeg) return;
+    this.startedFfmpeg = true;
 
     try {
-      const handler = async (request: Request): Promise<Response> => {
-        if (request.body) {
-          for await (const chunk of request.body) {
-            this.server.broadcast(chunk);
-          }
-        }
-        return new Response("", { status: 200 });
-      };
-
-      serve(handler, { port: streamWsPort });
-
       const args = [
         "ffmpeg",
         "-i",
@@ -42,7 +58,7 @@ export class FFMPEG {
         `http://127.0.0.1:${streamWsPort}`,
       ];
 
-      console.log("Starting FFMPEG server");
+      log.info("Starting FFMPEG server");
       const ffmpeg = Deno.run({
         cmd: args,
         stderr: "piped",
@@ -50,16 +66,23 @@ export class FFMPEG {
         stdout: "piped",
       });
 
+      this.process = ffmpeg;
+
       (async () => {
         for await (const output of ffmpeg.stderr.readable) {
           const message = new TextDecoder().decode(output);
           if (!message.startsWith("ffmpeg version ")) {
-            console.log(message);
+            log.debug(message);
           }
         }
       })();
     } catch (error) {
-      console.error(`FFMPEG error`, error);
+      log.error(`FFMPEG error`, error);
     }
+  }
+
+  stopFfmpeg() {
+    this.process?.close();
+    this.startedFfmpeg = false;
   }
 }

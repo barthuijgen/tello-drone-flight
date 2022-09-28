@@ -1,19 +1,19 @@
-import { Evt } from "https://deno.land/x/evt@v2.4.2/mod.ts";
+import { Evt } from "evt";
+import * as log from "log";
 import { commands } from "./commands.ts";
 import { DroneManager } from "./manager.ts";
 import { Telemetry } from "../shared/types.ts";
 
 interface Command {
   command: string;
-  callback: (message: string) => void;
-  error: (error: unknown) => void;
+  callback: Evt<string>;
+  error: (error: string) => void;
   time: number;
 }
 
 export class Drone {
   telemetry: Telemetry | null = null;
   commandBuffer: Command[] = [];
-  commandCallback: ((message: string) => void) | null = null;
   telemetryEvt = Evt.create<Telemetry>();
   active = false;
   streamEnabled = false;
@@ -25,27 +25,27 @@ export class Drone {
       const command = this.commandBuffer[0];
 
       if (!this.active && command.command !== "command") {
-        console.log("Clearing command buffer, drone inactive");
+        log.info("Clearing command buffer, drone inactive", {
+          drone: this.hostname,
+        });
         this.commandBuffer = [];
         return;
       }
 
       try {
-        const result = await this.send(command.command);
-        console.log(
-          `[drone:${this.hostname}] "${command.command}": ${result} (${
-            Date.now() - command.time
-          }ms)`
-        );
-        command.callback(result);
+        await this.manager.sendCommand(this.hostname, command.command);
+        await command.callback.waitFor(5000);
       } catch (error) {
-        console.log(
-          `[drone:${this.hostname}] "${command.command}": error (${
-            Date.now() - command.time
-          }ms)`
+        const isTimeout =
+          "message" in error && error.message.includes("Evt timeout");
+        const reason = isTimeout ? "timeout" : "error";
+
+        log.info(
+          `"${command.command}": ${reason} (${Date.now() - command.time}ms)`,
+          { drone: this.hostname, error: error.message }
         );
-        console.log(error);
-        command.error(error);
+
+        command.callback.post(isTimeout ? "timeout" : "error");
       }
 
       this.commandBuffer = this.commandBuffer.slice(1);
@@ -53,10 +53,15 @@ export class Drone {
   }
 
   onMessage(message: string) {
-    // console.log(`[drone:${this.hostname}] <`, message);
-    if (this.commandCallback) {
-      this.commandCallback(message);
-      this.commandCallback = null;
+    if (this.commandBuffer.length > 0) {
+      const command = this.commandBuffer[0];
+      log.info(
+        `"${command.command}": ${message.trim()} (${
+          Date.now() - command.time
+        }ms)`,
+        { drone: this.hostname }
+      );
+      this.commandBuffer[0].callback.post(message);
     }
   }
 
@@ -73,52 +78,52 @@ export class Drone {
     this.telemetryEvt.post(this.telemetry);
   }
 
-  command(command: string) {
-    return new Promise((resolve, reject) => {
+  command(command: string): Promise<string> {
+    return new Promise((resolve) => {
+      log.info(`command "${command}"`, {
+        drone: this.hostname,
+      });
+
+      const callback = new Evt<string>();
+
+      callback.attachOnce((response) => {
+        response = response.trim();
+
+        if (command === "command" && response === "command") {
+          log.error(
+            `Unexpected answer on "command", did the drone switch to a different IP?`,
+            { drone: this.hostname }
+          );
+        }
+
+        if (response === "ok") {
+          if (command === "command") this.active = true;
+          if (command === "streamon") this.streamEnabled = true;
+          if (command === "streamoff") this.streamEnabled = false;
+          resolve("ok");
+        } else if (response === "error") {
+          log.info("command responded with error", {
+            drone: this.hostname,
+            command,
+          });
+          resolve("error");
+        } else {
+          resolve(response);
+        }
+      });
+
       this.commandBuffer.push({
         command,
-        callback: resolve,
-        error: reject,
+        callback,
+        error: (error: string) => resolve(error),
         time: Date.now(),
       });
+
       if (this.commandBuffer.length === 1) this.processCommandBuffer();
     });
   }
 
-  send(message: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (this.commandCallback) {
-        console.log("there is already a command queued");
-        return;
-      }
-
-      console.log(`[drone:${this.hostname}] >`, message);
-      this.commandCallback = (response) => {
-        if (response === "ok") {
-          if (message === "command") this.active = true;
-          if (message === "streamon") this.streamEnabled = true;
-          if (message === "streamoff") this.streamEnabled = false;
-          resolve("ok");
-        }
-        if (response === "error") {
-          console.log("Error!!");
-          resolve("error");
-        } else {
-          resolve(response.trim());
-        }
-      };
-
-      this.manager.sendCommand(this.hostname, message);
-
-      // Drone became unresponsive
-      setTimeout(() => {
-        this.commandCallback = null;
-        reject(new Error("command timed out"));
-      }, 10000);
-    });
-  }
-
   async start() {
-    await this.send(commands.command());
+    await this.command(commands.command());
   }
 }

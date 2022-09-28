@@ -1,8 +1,6 @@
-import { Evt } from "https://deno.land/x/evt@v2.4.2/mod.ts";
-import {
-  WebSocketClient,
-  WebSocketServer,
-} from "https://deno.land/x/websocket@v0.1.4/mod.ts";
+import { Evt } from "evt";
+import * as log from "log";
+import { WebSocketClient, WebSocketServer } from "websocket";
 import { Payload } from "../shared/types.ts";
 
 interface ServerOptions {
@@ -20,22 +18,22 @@ export class Server {
 
     this.websocket.on("connection", (ws) => {
       const id = crypto.randomUUID();
-      console.log(`WebSocket connected, id: ${id}`);
+      log.info(`WebSocket connected, id: ${id}`);
       this.connections.add(ws);
       this.connectionIds.set(ws, id);
 
       ws.on("message", (message: string) => {
         try {
           const data = JSON.parse(message);
-          console.log("ws>", data);
+          log.info("ws>", data);
           this.onMessage.post(data);
         } catch (error) {
-          console.log("failed to parse websocket command", error);
+          log.info("failed to parse websocket command", error);
         }
       });
 
       ws.on("close", () => {
-        console.log(`Websocket connection closed id: ${id}`);
+        log.info(`Websocket connection closed id: ${id}`);
         this.connections.delete(ws);
         this.connectionIds.delete(ws);
       });
@@ -48,7 +46,6 @@ export class Server {
 
   broadcast(data: Uint8Array | string) {
     this.connections.forEach((conn) => {
-      // console.log("sending data to", this.connectionIds.get(conn));
       if (conn.isClosed) return;
       conn.send(data);
     });
