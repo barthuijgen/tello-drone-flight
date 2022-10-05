@@ -41,9 +41,10 @@ export const commands = {
    * y: 20-500
    * z: 20-500
    * speed: 10-100
+   * mid: mission pad id
    */
-  go: (x: number, y: number, z: number, speed: number) =>
-    `go ${x} ${y} ${z} ${speed}`,
+  go: (x: number, y: number, z: number, speed: number, mid?: number) =>
+    `go ${x} ${y} ${z} ${speed}` + (mid ? ` m${mid}` : ""),
   /**
    * fly a curve defined by the
    * current and two given coordinates with speed (cm/s)

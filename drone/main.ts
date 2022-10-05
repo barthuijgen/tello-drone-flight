@@ -3,6 +3,7 @@ import { commands } from "./commands.ts";
 import { DroneManager } from "./manager.ts";
 import { Server } from "./websocketserver.ts";
 import { FFMPEG } from "./ffmpeg.ts";
+import { FlightManager } from "./flightpath.ts";
 
 log.setup({
   handlers: {
@@ -70,6 +71,20 @@ server.onMessage.attach((message) => {
   }
 });
 
-// manager.connectToAccessPoint("barthotspot", "barry1234");
-const drone = manager.registerDrone("192.168.243.110");
+if (Deno.args.includes("--ap")) {
+  await manager.connectToAccessPoint("drones_wifi", "drones_wifi");
+  Deno.exit();
+}
+
+const drone = manager.registerDrone("192.168.8.120");
 // await drone.command(commands.command());
+
+if (Deno.args.includes("--fly")) {
+  const flightManager = new FlightManager(manager);
+  flightManager.setFlightPlan(drone.hostname, [
+    { mid: 8, x: 0, y: 0, z: 100 },
+    { mid: 8, x: 25, y: 0, z: 100 },
+    { mid: 8, x: 0, y: 25, z: 100 },
+  ]);
+  flightManager.start();
+}

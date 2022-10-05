@@ -15,6 +15,7 @@ export class Drone {
   telemetry: Telemetry | null = null;
   commandBuffer: Command[] = [];
   telemetryEvt = Evt.create<Telemetry>();
+  lastTelemetry = 0;
   active = false;
   streamEnabled = false;
 
@@ -34,14 +35,16 @@ export class Drone {
 
       try {
         await this.manager.sendCommand(this.hostname, command.command);
-        await command.callback.waitFor(5000);
+        await command.callback.waitFor(10000);
       } catch (error) {
         const isTimeout =
           "message" in error && error.message.includes("Evt timeout");
         const reason = isTimeout ? "timeout" : "error";
 
         log.info(
-          `"${command.command}": ${reason} (${Date.now() - command.time}ms)`,
+          `send "${command.command}": ${reason} (${
+            Date.now() - command.time
+          }ms)`,
           { drone: this.hostname, error: error.message }
         );
 
@@ -67,6 +70,7 @@ export class Drone {
 
   onTelemetryMessage(message: string) {
     this.active = true;
+    this.lastTelemetry = Date.now();
     this.telemetry = message
       .trim()
       .split(";")
@@ -80,7 +84,7 @@ export class Drone {
 
   command(command: string): Promise<string> {
     return new Promise((resolve) => {
-      log.info(`command "${command}"`, {
+      log.info(`buffer command "${command}"`, {
         drone: this.hostname,
       });
 
