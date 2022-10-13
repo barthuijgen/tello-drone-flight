@@ -81,6 +81,16 @@ export const App = () => {
           <button
             onClick={() =>
               send({
+                type: "command",
+                payload: { hostname: drone.hostname, command: "land" },
+              })
+            }
+          >
+            Land
+          </button>
+          <button
+            onClick={() =>
+              send({
                 type: "emergency",
                 payload: { hostname: drone.hostname },
               })

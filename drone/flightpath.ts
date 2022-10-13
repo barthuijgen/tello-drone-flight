@@ -1,14 +1,21 @@
+import { delay } from "https://deno.land/std@0.92.0/async/delay.ts";
 import { commands } from "./commands.ts";
 import { DroneManager } from "./manager.ts";
 
+interface WaitForDroneStep {
+  drone: string;
+  step: number;
+}
+
+type WaitFor = WaitForDroneStep;
+
 interface FlightStep {
-  mid?: number;
-  x: number;
-  y: number;
-  z: number;
+  command: string;
+  waitAtMid?: number | { mid: number; x: number; y: number; z: number };
   speed?: number;
   /** waitFor will be polled until true and then execute the step */
-  waitFor?: () => boolean;
+  waitFor?: ((manager: FlightManager) => boolean) | WaitFor[];
+  delay?: number;
 }
 
 interface FlightPlan {
@@ -55,13 +62,16 @@ export class FlightManager {
   }
 
   tick() {
-    this.plans.forEach((plan) => {
+    this.plans.forEach(async (plan) => {
       // Steps
       if (plan.executedStep > plan.completedStep) return;
       const nextStep = plan.executedStep + 1;
       const step = plan.steps[nextStep];
-      if (!step) return;
       const drone = this.manager.drones.get(plan.drone);
+      if (!step) {
+        if (drone?.active) drone.command(commands.land());
+        return;
+      }
 
       const { steps, ..._plan } = plan;
       console.log("execute step", _plan, step);
@@ -75,21 +85,37 @@ export class FlightManager {
         return drone.command(commands.takeoff());
       }
 
-      drone
-        ?.command(
-          commands.go(
-            step.x,
-            step.y,
-            step.z,
-            step.speed || this.defaultSpeed,
-            step.mid
-          )
-        )
-        .then(() => {
-          console.log("completed step", plan.executedStep);
-          plan.completedStep++;
-        });
+      if (typeof step.waitFor === "function") {
+        const cond = step.waitFor(this);
+        if (cond !== true) return;
+      } else if (step.waitFor) {
+        for (const wait of step.waitFor) {
+          const target = this.plans.get(wait.drone);
+          if (target?.completedStep !== wait.step) return;
+        }
+      }
+
+      // Step will run this tick
       plan.executedStep++;
+
+      if (step.delay) {
+        await delay(step.delay);
+      }
+
+      // diff
+      if (drone.telemetry?.mid) {
+        const vec3 = {
+          x: drone.telemetry.x,
+          y: drone.telemetry.y,
+          z: drone.telemetry.z,
+        };
+        console.log("flight step diff", vec3);
+      }
+
+      drone?.command(step.command).then(() => {
+        console.log("completed step", plan.executedStep);
+        plan.completedStep++;
+      });
     });
   }
 }

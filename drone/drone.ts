@@ -19,7 +19,15 @@ export class Drone {
   active = false;
   streamEnabled = false;
 
-  constructor(public manager: DroneManager, public hostname: string) {}
+  constructor(public manager: DroneManager, public hostname: string) {
+    setInterval(() => {
+      if (this.active && Date.now() - this.lastTelemetry > 1000) {
+        // Have not received telemetry, drone is not active anymore
+        this.active = false;
+        this.streamEnabled = false;
+      }
+    }, 1000);
+  }
 
   async processCommandBuffer() {
     while (this.commandBuffer.length > 0) {
@@ -84,7 +92,7 @@ export class Drone {
 
   command(command: string): Promise<string> {
     return new Promise((resolve) => {
-      log.info(`buffer command "${command}"`, {
+      log.debug(`buffer command "${command}"`, {
         drone: this.hostname,
       });
 

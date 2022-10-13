@@ -76,15 +76,87 @@ if (Deno.args.includes("--ap")) {
   Deno.exit();
 }
 
-const drone = manager.registerDrone("192.168.8.120");
+const drone1 = manager.registerDrone("192.168.8.120");
+const drone2 = manager.registerDrone("192.168.8.121");
+const drone3 = manager.registerDrone("192.168.8.171");
 // await drone.command(commands.command());
+
+/**
+ Coord system based on rocket symbol
+ +x = forwards
+ -x = backwards
+ +y = left
+ -y = right
+ */
 
 if (Deno.args.includes("--fly")) {
   const flightManager = new FlightManager(manager);
-  flightManager.setFlightPlan(drone.hostname, [
-    { mid: 8, x: 0, y: 0, z: 100 },
-    { mid: 8, x: 25, y: 0, z: 100 },
-    { mid: 8, x: 0, y: 25, z: 100 },
+
+  flightManager.setFlightPlan(drone1.hostname, [
+    {
+      command: commands.go(0, 0, 100, 70, "m1"),
+    },
+    {
+      command: commands.curve(
+        // coord 1
+        -100,
+        -100,
+        0,
+        // coord 2
+        0,
+        -200,
+        0,
+        //speed
+        50
+      ),
+    },
   ]);
+
+  // const drone1Mid = 1;
+  // flightManager.setFlightPlan(drone1.hostname, [
+  //   {
+  //     command: commands.go(0, 0, 100, flightManager.defaultSpeed, drone1Mid),
+  //     waitAtMid: drone1Mid,
+  //   },
+  //   {
+  //     command: commands.go(0, 0, 70, flightManager.defaultSpeed, drone1Mid),
+  //     waitFor: (m) => m.plans.get(drone2.hostname)?.completedStep === 0,
+  //     waitAtMid: drone1Mid,
+  //   },
+  //   {
+  //     command: commands.go(0, 0, 100, flightManager.defaultSpeed, drone1Mid),
+  //     waitFor: (m) => m.plans.get(drone2.hostname)?.completedStep === 1,
+  //     waitAtMid: drone1Mid,
+  //   },
+  //   {
+  //     command: commands.go(0, 0, 70, flightManager.defaultSpeed, drone1Mid),
+  //     waitFor: (m) => m.plans.get(drone2.hostname)?.completedStep === 2,
+  //     waitAtMid: drone1Mid,
+  //   },
+  // ]);
+
+  // const drone2Mid = 3;
+  // flightManager.setFlightPlan(drone2.hostname, [
+  //   {
+  //     command: commands.go(0, 0, 100, flightManager.defaultSpeed, drone2Mid),
+  //     waitAtMid: drone2Mid,
+  //   },
+  //   {
+  //     command: commands.go(0, 0, 70, flightManager.defaultSpeed, drone2Mid),
+  //     waitFor: (m) => m.plans.get(drone1.hostname)?.completedStep === 0,
+  //     waitAtMid: drone2Mid,
+  //   },
+  //   {
+  //     command: commands.go(0, 0, 100, flightManager.defaultSpeed, drone2Mid),
+  //     waitFor: (m) => m.plans.get(drone1.hostname)?.completedStep === 1,
+  //     waitAtMid: drone2Mid,
+  //   },
+  //   {
+  //     command: commands.go(0, 0, 70, flightManager.defaultSpeed, drone2Mid),
+  //     waitFor: (m) => m.plans.get(drone1.hostname)?.completedStep === 2,
+  //     waitAtMid: drone2Mid,
+  //   },
+  // ]);
+
   flightManager.start();
 }

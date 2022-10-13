@@ -67,7 +67,9 @@ export class DroneManager {
   async sendCommand(hostname: string, message: string) {
     try {
       const encoder = new TextEncoder();
-      log.debug(`[SENDING] "${message}"`);
+      log.info(`[SENDING] "${message}"`, {
+        drone: hostname,
+      });
       await this.commandConn.send(encoder.encode(message), {
         port: commandPort,
         transport,
