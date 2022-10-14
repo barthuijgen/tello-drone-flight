@@ -247,7 +247,11 @@ export const Controls = (props: TProps) => {
   }, [activeDrones]);
 
   const doAutoPilot = useCallback(() => {
-    send({ type: "flightplan", payload: { plan: 1 } });
+    const plan = parseInt(window.prompt("Please specify a plan!") || "", 12);
+
+    if (!isNaN(plan)) {
+      send({ type: "flightplan", payload: { plan } });
+    }
   }, []);
 
   const keyHandler = useCallback(
