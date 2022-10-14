@@ -1,8 +1,7 @@
-import { delay } from "https://deno.land/std@0.92.0/async/delay.ts";
 import { commands } from "./commands.ts";
 import { Drone } from "./drone.ts";
 import { DroneManager } from "./manager.ts";
-
+import * as log from "log";
 interface WaitForDroneStep {
   drone: string;
   step: number;
@@ -85,9 +84,9 @@ export class FlightManager {
         return drone.commandIfNotQueued(commands.command());
       }
       // Auto launch
-      if (!drone.flying) {
-        return drone.commandIfNotQueued(commands.takeoff());
-      }
+      // if (!drone.flying) {
+      //   return drone.commandIfNotQueued(commands.takeoff());
+      // }
 
       const doWhileWaiting = () => {
         if (
@@ -105,7 +104,7 @@ export class FlightManager {
             Math.abs(drone.telemetry.x) > 10 ||
             Math.abs(drone.telemetry.y) > 10
           ) {
-            drone.command(commands.go(0, 0, 0, 70, drone.telemetry.mid));
+            // drone.command(commands.go(0, 0, 0, 70, drone.telemetry.mid));
           }
         }
       };
@@ -145,6 +144,9 @@ export class FlightManager {
       }
 
       if (typeof step.command === "object" && step.command.type === "matrix") {
+        console.log(
+          `Flying matrix from ${drone?.telemetry?.mid} to ${step.command.mid}`
+        );
         this.flyToMid(
           drone,
           step.command.mid,
@@ -156,7 +158,9 @@ export class FlightManager {
             console.log("error on step", plan.executedStep);
             plan.executedStep--;
           } else {
-            console.log("completed step", plan.executedStep);
+            log.info(`completed step ${plan.executedStep}`, {
+              drone: drone.hostname,
+            });
             plan.completedStep++;
           }
         });
@@ -186,7 +190,7 @@ export class FlightManager {
  */
 
   async flyToMid(drone: Drone, mid: number, z: number, speed: number) {
-    const dist = 60;
+    const dist = 80;
     const matrix = [
       // 1
       [
