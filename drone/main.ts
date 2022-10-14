@@ -79,7 +79,12 @@ if (Deno.args.includes("--ap")) {
 const drone1 = manager.registerDrone("192.168.8.120");
 const drone2 = manager.registerDrone("192.168.8.121");
 const drone3 = manager.registerDrone("192.168.8.171");
-// await drone.command(commands.command());
+
+if (Deno.args.includes("--idle")) {
+  drone1.start();
+  drone2.start();
+  drone3.start();
+}
 
 /**
  Coord system based on rocket symbol
@@ -92,24 +97,39 @@ const drone3 = manager.registerDrone("192.168.8.171");
 if (Deno.args.includes("--fly")) {
   const flightManager = new FlightManager(manager);
 
-  flightManager.setFlightPlan(drone1.hostname, [
-    {
-      command: commands.go(0, 0, 100, 70, 1),
-    },
-    {
-      command: commands.curve(
-        // coord 1
-        -100,
-        -100,
-        0,
-        // coord 2
-        0,
-        -200,
-        0,
-        //speed
-        50
-      ),
-    },
+  // curve test
+  // flightManager.setFlightPlan(drone1.hostname, [
+  //   {
+  //     command: commands.go(0, 0, 100, 70, 1),
+  //   },
+  //   {
+  //     command: commands.curve(
+  //       // coord 1
+  //       -100,
+  //       -100,
+  //       0,
+  //       // coord 2
+  //       0,
+  //       -200,
+  //       0,
+  //       //speed
+  //       50
+  //     ),
+  //   },
+  // ]);
+
+  // mutliple mid test
+  // flightManager.setFlightPlan(drone2.hostname, [
+  //   { command: commands.go(0, 0, 100, 70, 5) },
+  //   { command: commands.go(0, 60, 100, 70, 5) },
+  //   { command: commands.go(0, 0, 100, 70, 3) },
+  //   { command: commands.go(0, 0, 70, 70, 3) },
+  // ]);
+  flightManager.setFlightPlan(drone2.hostname, [
+    { command: commands.matrixGo(0, 0, 100, 70, 5) },
+    { command: commands.matrixGo(0, 0, 100, 70, 3) },
+    { command: commands.matrixGo(0, 0, 100, 70, 1) },
+    { command: commands.matrixGo(0, 0, 100, 70, 6) },
   ]);
 
   // const drone1Mid = 1;

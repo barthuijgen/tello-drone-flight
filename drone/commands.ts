@@ -81,6 +81,14 @@ export const commands = {
   wifi: (ssid: string, pass: string) => `wifi ${ssid} ${pass}`,
   /** connect to existing access point */
   ap: (ssid: string, pass: string) => `ap ${ssid} ${pass}`,
+  matrixGo: (x: number, y: number, z: number, speed: number, mid: number) => ({
+    type: "matrix",
+    x,
+    y,
+    z,
+    speed,
+    mid,
+  }),
 };
 
 export const readCommands = {

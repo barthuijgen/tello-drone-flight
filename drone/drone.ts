@@ -17,6 +17,7 @@ export class Drone {
   telemetryEvt = Evt.create<Telemetry>();
   lastTelemetry = 0;
   active = false;
+  flying = false;
   streamEnabled = false;
 
   constructor(public manager: DroneManager, public hostname: string) {
@@ -24,6 +25,7 @@ export class Drone {
       if (this.active && Date.now() - this.lastTelemetry > 1000) {
         // Have not received telemetry, drone is not active anymore
         this.active = false;
+        this.flying = false;
         this.streamEnabled = false;
       }
     }, 1000);
@@ -87,12 +89,26 @@ export class Drone {
         if (key) memo[key as keyof Telemetry] = parseFloat(val);
         return memo;
       }, {} as Telemetry);
+
+    if (this.flying && this.telemetry.h === 0) {
+      console.log("telemetry.h is 0, not flying anymore.");
+      this.flying = false;
+    }
+
     this.telemetryEvt.post(this.telemetry);
+  }
+
+  async commandIfNotQueued(command: string): Promise<string | null> {
+    if (this.commandBuffer.some((x) => x.command === command)) {
+      // console.log(`command ${command} already buffered, ignoring`);
+      return null;
+    }
+    return await this.command(command);
   }
 
   command(command: string): Promise<string> {
     return new Promise((resolve) => {
-      log.debug(`buffer command "${command}"`, {
+      log.info(`buffer command "${command}"`, {
         drone: this.hostname,
       });
 
@@ -112,6 +128,8 @@ export class Drone {
           if (command === "command") this.active = true;
           if (command === "streamon") this.streamEnabled = true;
           if (command === "streamoff") this.streamEnabled = false;
+          if (command === "takeoff") this.flying = true;
+          if (command === "land") this.flying = false;
           resolve("ok");
         } else if (response === "error") {
           log.info("command responded with error", {
