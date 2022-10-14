@@ -204,16 +204,19 @@ export const Controls = (props: TProps) => {
     [activeDrones]
   );
 
-  const doMove = useCallback((direction: TDirection) => {
-    if (activeDrones?.length) {
-      activeDrones.forEach((drone) => {
-        send({
-          type: "command",
-          payload: { hostname: drone.hostname, command: `${direction} 10` },
+  const doMove = useCallback(
+    (direction: TDirection) => {
+      if (activeDrones?.length) {
+        activeDrones.forEach((drone) => {
+          send({
+            type: "command",
+            payload: { hostname: drone.hostname, command: `${direction} 10` },
+          });
         });
-      });
-    }
-  }, []);
+      }
+    },
+    [activeDrones]
+  );
 
   const doActivate = useCallback(() => {
     if (activeDrones?.length) {
