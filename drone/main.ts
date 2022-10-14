@@ -3,7 +3,7 @@ import { commands } from "./commands.ts";
 import { DroneManager } from "./manager.ts";
 import { Server } from "./websocketserver.ts";
 import { FFMPEG } from "./ffmpeg.ts";
-import { FlightManager } from "./flightpath.ts";
+import { FlightManager, FlightStep } from "./flightpath.ts";
 
 log.setup({
   handlers: {
@@ -72,12 +72,18 @@ server.onMessage.attach((message) => {
   if (message.type === "command") {
     if (message.payload.hostname) {
       const drone = manager.getDrone(message.payload.hostname);
+      if (message.payload.command === "land") {
+        drone.commandBuffer = [];
+      }
       drone.command(message.payload.command);
     }
   }
   if (message.type === "flightplan") {
     if (message.payload.plan === 1) {
       flightPlanOne();
+    }
+    if (message.payload.plan === 2) {
+      flightPlanTwo();
     }
   }
 });
@@ -182,11 +188,74 @@ function flightPlanOne() {
         m.plans.get(drones[1].hostname)?.completedStep === 3,
     },
   ]);
+  flightManager.start();
+}
+
+/////////////////////////////////////////////////////////////////////
+
+function flightPlanTwo() {
+  flightManager.setFlightPlan(drones[0].hostname, [
+    {
+      command: commands.takeoff(),
+    },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 5),
+    },
+    ...[6, 7, 8, 4, 3, 2, 1, 5].map(
+      (mid, i) =>
+        ({
+          command: commands.matrixGo(0, 0, 100, 70, mid),
+          waitFor: (m) =>
+            m.plans.get(drones[1].hostname)?.completedStep === i + 1 &&
+            m.plans.get(drones[2].hostname)?.completedStep === i + 1,
+        } as FlightStep)
+    ),
+  ]);
+
+  flightManager.setFlightPlan(drones[1].hostname, [
+    {
+      command: commands.takeoff(),
+      waitFor: (m) => m.plans.get(drones[0].hostname)?.completedStep === 1,
+    },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 6),
+    },
+    ...[7, 8, 4, 3, 2, 1, 5, 6].map(
+      (mid, i) =>
+        ({
+          command: commands.matrixGo(0, 0, 100, 70, mid),
+          waitFor: (m) =>
+            m.plans.get(drones[1].hostname)?.completedStep === i + 1 &&
+            m.plans.get(drones[2].hostname)?.completedStep === i + 1,
+        } as FlightStep)
+    ),
+  ]);
+
+  flightManager.setFlightPlan(drones[2].hostname, [
+    {
+      command: commands.takeoff(),
+      waitFor: (m) =>
+        m.plans.get(drones[0].hostname)?.completedStep === 1 &&
+        m.plans.get(drones[1].hostname)?.completedStep === 1,
+    },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 7),
+    },
+    ...[8, 4, 3, 2, 1, 5, 6, 7].map(
+      (mid, i) =>
+        ({
+          command: commands.matrixGo(0, 0, 100, 70, mid),
+          waitFor: (m) =>
+            m.plans.get(drones[1].hostname)?.completedStep === i + 1 &&
+            m.plans.get(drones[2].hostname)?.completedStep === i + 1,
+        } as FlightStep)
+    ),
+  ]);
+  flightManager.start();
 }
 
 if (Deno.args.includes("--fly")) {
   flightPlanOne();
-  flightManager.start();
 }
 
 function flightPlanTest() {

@@ -9,7 +9,7 @@ interface WaitForDroneStep {
 
 type WaitFor = WaitForDroneStep;
 
-interface FlightStep {
+export interface FlightStep {
   command: ReturnType<typeof commands[keyof typeof commands]>;
   waitAtMid?: number | { mid: number; x: number; y: number; z: number };
   speed?: number;

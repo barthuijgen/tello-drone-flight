@@ -23,8 +23,11 @@ export class Drone {
 
   constructor(public manager: DroneManager, public hostname: string) {
     setInterval(() => {
-      if (this.active && Date.now() - this.lastTelemetry > 1000) {
+      if (this.active && Date.now() - this.lastTelemetry > 5000) {
         // Have not received telemetry, drone is not active anymore
+        log.warning(`Drone has not received telemetry for 5 sec`, {
+          drone: this.hostname,
+        });
         this.active = false;
         this.flying = false;
         this.streamEnabled = false;
