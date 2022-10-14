@@ -23,7 +23,7 @@ export interface Telemetry {
 }
 
 export interface DroneState {
-  hostname: string;
+  hostname: string | null;
   active: boolean;
   telemetry: Telemetry | null;
   camera: boolean;
@@ -35,16 +35,16 @@ export interface State {
 
 type PayloadId = { type: "id"; payload: string };
 type PayloadState = { type: "state"; payload: State };
-type PayloadStart = { type: "start"; payload: { hostname: string } };
-type PayloadStop = { type: "stop"; payload: { hostname: string } };
-type PayloadEmergency = { type: "emergency"; payload: { hostname?: string } };
+type PayloadStart = { type: "start"; payload: { hostname: string | null } };
+type PayloadStop = { type: "stop"; payload: { hostname: string | null } };
+type PayloadEmergency = { type: "emergency"; payload: { hostname?: string | null } };
 type PayloadCommand = {
   type: "command";
-  payload: { hostname: string; command: string };
+  payload: { hostname: string | null; command: string };
 };
 type PayloadStream = {
   type: "stream";
-  payload: { hostname: string; enabled: boolean };
+  payload: { hostname: string | null; enabled: boolean };
 };
 
 export type Payload =
@@ -55,3 +55,5 @@ export type Payload =
   | PayloadCommand
   | PayloadStream
   | PayloadEmergency;
+
+export type TConnectionStatus = "connecting" | "open" | "closed";

@@ -78,7 +78,7 @@ if (Deno.args.includes("--ap")) {
 
 manager.registerDrone("192.168.8.134");
 manager.registerDrone("192.168.8.121");
-// manager.registerDrone("192.168.8.171");
+manager.registerDrone("192.168.8.171");
 const drones = Array.from(manager.drones.values());
 
 if (Deno.args.includes("--idle")) {

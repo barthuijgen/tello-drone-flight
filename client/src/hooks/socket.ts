@@ -1,10 +1,10 @@
 import { Evt } from "evt";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Payload } from "../../../shared/types";
+import { Payload, TConnectionStatus } from "../../../shared/types";
 
 export function useWebsocketClient(remoteIp: string) {
   const [reconnectAttempt, setReconnectAttempt] = useState(0);
-  const [status, setStatus] = useState<"connecting" | "open" | "closed">(
+  const [status, setStatus] = useState<TConnectionStatus>(
     "closed"
   );
   const websocketRef = useRef<WebSocket | null>(null);

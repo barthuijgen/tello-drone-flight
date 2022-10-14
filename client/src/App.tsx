@@ -3,10 +3,14 @@ import { State } from "../../shared/types";
 import { DroneView } from "./drone-view/DroneView";
 import { useWebsocketClient } from "./hooks/socket";
 import { VideoSteam } from "./video";
+import Controls from "./components/controls";
+import { fonts } from "./utils/style.config";
+
+fonts();
 
 export const App = () => {
   const [state, setState] = useState<State>();
-  const [commandInput, setCommandInput] = useState("");
+  // const [commandInput, setCommandInput] = useState("");
   const { send, onMessage, status } = useWebsocketClient("ws://127.0.0.1:8891");
 
   useEffect(() => {
@@ -20,13 +24,14 @@ export const App = () => {
     });
   }, [onMessage]);
 
-  const hasVideoSteam = useMemo(() => {
-    return state?.drones.some((x) => x.camera) ?? false;
-  }, [state]);
+  // const hasVideoSteam = useMemo(() => {
+  //   return state?.drones.some((x) => x.camera) ?? false;
+  // }, [state]);
 
   return (
     <div>
-      <div>Conection: {status}</div>
+      {state && <Controls handlers={{ send }} status={status} state={state} />}
+      {/* <div>Conection: {status}</div>
       {state?.drones.map((drone) => (
         <div key={drone.hostname}>
           <div>Hostname: {drone.hostname}</div>
@@ -151,7 +156,7 @@ export const App = () => {
           <pre>{JSON.stringify(drone.telemetry, null, 2)}</pre>
         </div>
       ))}
-      {hasVideoSteam && <VideoSteam />}
+      {hasVideoSteam && <VideoSteam />} */}
     </div>
   );
 };

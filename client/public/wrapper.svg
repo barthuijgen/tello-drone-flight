@@ -1,0 +1,88 @@
+<svg width="1114" height="550" viewBox="0 0 1114 550" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1114" height="550" fill="#F5F5F5"/>
+<g id="wrapper">
+<rect id="background" width="1114" height="550" rx="40" fill="#DFDFDF"/>
+<g id="status-indicators-wrapper">
+<g id="battery-wrapper">
+<rect id="Rectangle 33" x="411" y="47" width="276" height="114" rx="8" fill="black"/>
+<g id="battery">
+<rect id="Rectangle 34" x="473" y="78" width="36" height="36" rx="18" transform="rotate(90 473 78)" fill="#FF0000"/>
+<rect id="Rectangle 35" x="567" y="78" width="36" height="36" rx="18" transform="rotate(90 567 78)" fill="#FF0000"/>
+<rect id="Rectangle 36" x="661" y="78" width="36" height="36" rx="18" transform="rotate(90 661 78)" fill="#FF0000"/>
+</g>
+<text id="Battery" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="526.268" y="148.864">Battery</tspan></text>
+</g>
+<g id="active-wrapper">
+<rect id="Rectangle 37" x="411" y="167" width="276" height="114" rx="8" fill="black"/>
+<g id="activeDrone">
+<rect id="Rectangle 38" x="473" y="198" width="36" height="36" rx="18" transform="rotate(90 473 198)" fill="#FF0000"/>
+<rect id="Rectangle 39" x="567" y="198" width="36" height="36" rx="18" transform="rotate(90 567 198)" fill="#05FF00"/>
+<rect id="Rectangle 40" x="661" y="198" width="36" height="36" rx="18" transform="rotate(90 661 198)" fill="#FF0000"/>
+<text id="mid2-value" fill="black" xml:space="preserve" style="white-space: pre" font-family="Digital Numbers" font-size="18" letter-spacing="0em"><tspan x="541.302" y="221.413">1</tspan></text>
+<text id="mid3-value" fill="black" xml:space="preserve" style="white-space: pre" font-family="Digital Numbers" font-size="18" letter-spacing="0em"><tspan x="636.302" y="221.413">1</tspan></text>
+<text id="mid1-value" fill="black" xml:space="preserve" style="white-space: pre" font-family="Digital Numbers" font-size="18" letter-spacing="0em"><tspan x="447.302" y="221.413">1</tspan></text>
+</g>
+<text id="Active Drone" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="510.125" y="268.864">Active Drone</tspan></text>
+</g>
+<g id="connection-wrapper">
+<rect id="Rectangle 41" x="411" y="287" width="276" height="114" rx="8" fill="black"/>
+<g id="connections">
+<rect id="Rectangle 42" x="473" y="318" width="36" height="36" rx="18" transform="rotate(90 473 318)" fill="#05FF00"/>
+<rect id="Rectangle 43" x="567" y="318" width="36" height="36" rx="18" transform="rotate(90 567 318)" fill="#05FF00"/>
+<rect id="Rectangle 44" x="661" y="318" width="36" height="36" rx="18" transform="rotate(90 661 318)" fill="#05FF00"/>
+</g>
+<text id="Connection" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="514.357" y="388.864">Connection</tspan></text>
+</g>
+</g>
+<g id="speed-indicator-wrapper">
+<rect id="Rectangle 45" x="783" y="167" width="212" height="114" rx="8" fill="black"/>
+<text id="Speed" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="870.285" y="268.864">Speed</tspan></text>
+<text id="speed-value" fill="#05FF00" xml:space="preserve" style="white-space: pre" font-family="Digital Numbers" font-size="27" letter-spacing="0em"><tspan x="835.013" y="209.369">12345</tspan></text>
+</g>
+<g id="speed-indicator-wrapper_2">
+<rect id="Rectangle 45_2" x="783" y="287" width="212" height="114" rx="8" fill="black"/>
+<text id="Altitude" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="865.445" y="388.864">Altitude</tspan></text>
+<text id="speed-value_2" fill="#05FF00" xml:space="preserve" style="white-space: pre" font-family="Digital Numbers" font-size="27" letter-spacing="0em"><tspan x="835.013" y="329.369">12345</tspan></text>
+</g>
+<g id="tof-indicator-wrapper">
+<rect id="Rectangle 46" x="783" y="47" width="212" height="114" rx="8" fill="black"/>
+<text id="Take of flight" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="851.285" y="148.864">Take of flight</tspan></text>
+<text id="tof-value" fill="#05FF00" xml:space="preserve" style="white-space: pre" font-family="Digital Numbers" font-size="18" letter-spacing="0em"><tspan x="795" y="72.413">1: 12345&#10;</tspan><tspan x="795" y="99.413">2: 2345&#10;</tspan><tspan x="795" y="126.413">3: 345&#10;</tspan></text>
+</g>
+<g id="control-wrappers">
+<g id="all-lock-wrapper">
+<rect id="Rectangle 32" x="411" y="406" width="276" height="98" rx="8" fill="black"/>
+<g id="sync-button">
+<rect id="button" x="509" y="437" width="36" height="72" rx="8" transform="rotate(90 509 437)" fill="white"/>
+<text id="label" fill="black" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="458.299" y="459.864">Sync</tspan></text>
+</g>
+<g id="async-button">
+<rect id="Rectangle 26" x="661" y="437" width="36" height="72" rx="8" transform="rotate(90 661 437)" fill="white"/>
+<text id="Async" fill="black" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="606.449" y="459.864">Async</tspan></text>
+</g>
+</g>
+<g id="stop-button-wrapper">
+<rect id="Rectangle 27" x="783" y="406" width="98" height="98" rx="8" fill="black"/>
+<g id="stop-button">
+<circle id="Ellipse 1" cx="832" cy="455" r="31" fill="#FF0000"/>
+<text id="Stop" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="818.295" y="458.864">Stop</tspan></text>
+</g>
+</g>
+<g id="start-button-wrapper">
+<rect id="Rectangle 30" x="897" y="406" width="98" height="98" rx="8" fill="black"/>
+<g id="start-button">
+<circle id="Ellipse 2" cx="946" cy="455" r="31" fill="#FF0000"/>
+<text id="Start" fill="white" xml:space="preserve" style="white-space: pre" font-family="Inter" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="930.305" y="458.864">Start</tspan></text>
+</g>
+</g>
+</g>
+<g id="direction-controls">
+<path id="outer-controls" fill-rule="evenodd" clip-rule="evenodd" d="M309 238C309 233.582 305.418 230 301 230L262 230C257.582 230 254 226.418 254 222V183C254 178.582 250.418 175 246 175L162 175C157.582 175 154 178.582 154 183V222C154 226.418 150.418 230 146 230L107 230C102.582 230 99 233.582 99 238V322C99 326.418 102.582 330 107 330H146C150.418 330 154 333.582 154 338V377C154 381.418 157.582 385 162 385H246C250.418 385 254 381.418 254 377V338C254 333.582 257.582 330 262 330H301C305.418 330 309 326.418 309 322V238ZM226 310C230.418 310 234 306.418 234 302V258C234 253.582 230.418 250 226 250L182 250C177.582 250 174 253.582 174 258V302C174 306.418 177.582 310 182 310H226Z" fill="#4B4B4B"/>
+<path id="inner-controls" fill-rule="evenodd" clip-rule="evenodd" d="M234 203C234 198.582 230.418 195 226 195H182C177.582 195 174 198.582 174 203V242C174 246.418 170.418 250 166 250L127 250C122.582 250 119 253.582 119 258V302C119 306.418 122.582 310 127 310H166C170.418 310 174 313.582 174 318V357C174 361.418 177.582 365 182 365H226C230.418 365 234 361.418 234 357V318C234 313.582 237.582 310 242 310H281C285.418 310 289 306.418 289 302V258C289 253.582 285.418 250 281 250L242 250C237.582 250 234 246.418 234 242V203ZM229 263C229 258.582 225.418 255 221 255H187C182.582 255 179 258.582 179 263V297C179 301.418 182.582 305 187 305H221C225.418 305 229 301.418 229 297V263Z" fill="white"/>
+<rect id="right-control-button" x="239" y="260" width="40" height="40" rx="8" fill="black"/>
+<rect id="left-control-button" x="129" y="260" width="40" height="40" rx="8" fill="black"/>
+<rect id="down-control-button" x="224" y="315" width="40" height="40" rx="8" transform="rotate(90 224 315)" fill="black"/>
+<rect id="up-control-button" x="224" y="205" width="40" height="40" rx="8" transform="rotate(90 224 205)" fill="black"/>
+</g>
+</g>
+</svg>
