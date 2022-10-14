@@ -76,23 +76,14 @@ if (Deno.args.includes("--ap")) {
   Deno.exit();
 }
 
-const drone1 = manager.registerDrone("192.168.8.120");
-const drone2 = manager.registerDrone("192.168.8.121");
-const drone3 = manager.registerDrone("192.168.8.171");
+manager.registerDrone("192.168.8.134");
+manager.registerDrone("192.168.8.121");
+// manager.registerDrone("192.168.8.171");
+const drones = Array.from(manager.drones.values());
 
 if (Deno.args.includes("--idle")) {
-  drone1.start();
-  drone2.start();
-  drone3.start();
+  manager.drones.forEach((drone) => drone.start());
 }
-
-/**
- Coord system based on rocket symbol
- +x = forwards
- -x = backwards
- +y = left
- -y = right
- */
 
 if (Deno.args.includes("--fly")) {
   const flightManager = new FlightManager(manager);
@@ -125,11 +116,28 @@ if (Deno.args.includes("--fly")) {
   //   { command: commands.go(0, 0, 100, 70, 3) },
   //   { command: commands.go(0, 0, 70, 70, 3) },
   // ]);
-  flightManager.setFlightPlan(drone2.hostname, [
-    { command: commands.matrixGo(0, 0, 100, 70, 5) },
-    { command: commands.matrixGo(0, 0, 100, 70, 3) },
+  flightManager.setFlightPlan(drones[0].hostname, [
     { command: commands.matrixGo(0, 0, 100, 70, 1) },
-    { command: commands.matrixGo(0, 0, 100, 70, 6) },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 5),
+      waitFor: (m) => m.plans.get(drones[1].hostname)?.completedStep === 0,
+    },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 1),
+      waitFor: (m) => m.plans.get(drones[1].hostname)?.completedStep === 1,
+    },
+  ]);
+
+  flightManager.setFlightPlan(drones[1].hostname, [
+    { command: commands.matrixGo(0, 0, 100, 70, 2) },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 6),
+      waitFor: (m) => m.plans.get(drones[0].hostname)?.completedStep === 0,
+    },
+    {
+      command: commands.matrixGo(0, 0, 100, 70, 2),
+      waitFor: (m) => m.plans.get(drones[0].hostname)?.completedStep === 1,
+    },
   ]);
 
   // const drone1Mid = 1;

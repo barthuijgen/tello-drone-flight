@@ -17,6 +17,7 @@ interface FlightStep {
   /** waitFor will be polled until true and then execute the step */
   waitFor?: ((manager: FlightManager) => boolean) | WaitFor[];
   delay?: number;
+  delayStart?: number;
 }
 
 interface FlightPlan {
@@ -63,7 +64,7 @@ export class FlightManager {
   }
 
   tick() {
-    this.plans.forEach(async (plan) => {
+    this.plans.forEach((plan) => {
       // Steps
       if (plan.executedStep > plan.completedStep) return;
       const nextStep = plan.executedStep + 1;
@@ -87,23 +88,50 @@ export class FlightManager {
         return drone.commandIfNotQueued(commands.takeoff());
       }
 
+      const doWhileWaiting = () => {
+        if (
+          drone?.telemetry?.mid &&
+          drone.telemetry.mid > -1 &&
+          drone.commandBuffer.length === 0
+        ) {
+          console.log(
+            "doWhileWaiting diff mid",
+            drone.telemetry.mid,
+            drone.telemetry.x,
+            drone.telemetry.y
+          );
+          if (
+            Math.abs(drone.telemetry.x) > 10 ||
+            Math.abs(drone.telemetry.y) > 10
+          ) {
+            drone.command(commands.go(0, 0, 0, 70, drone.telemetry.mid));
+          }
+        }
+      };
+
       if (typeof step.waitFor === "function") {
         const cond = step.waitFor(this);
-        if (cond !== true) return;
+        if (cond !== true) return doWhileWaiting();
       } else if (step.waitFor) {
         for (const wait of step.waitFor) {
           const target = this.plans.get(wait.drone);
-          if (target?.completedStep !== wait.step) return;
+          if (target?.completedStep !== wait.step) return doWhileWaiting();
         }
+      }
+
+      if (step.delay && step.delayStart) {
+        const isDelayPassed = Date.now() - step.delayStart > step.delay;
+        if (!isDelayPassed) return doWhileWaiting();
+      }
+
+      if (step.delay && !step.delayStart) {
+        step.delayStart = Date.now();
+        return;
       }
 
       // Step will run this tick
       console.log("execute step", _plan, step);
       plan.executedStep++;
-
-      if (step.delay) {
-        await delay(step.delay);
-      }
 
       // diff
       if (drone.telemetry?.mid) {

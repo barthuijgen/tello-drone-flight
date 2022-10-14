@@ -28,7 +28,7 @@ export class Drone {
         this.flying = false;
         this.streamEnabled = false;
       }
-    }, 1000);
+    }, 5000);
   }
 
   async processCommandBuffer() {
@@ -45,7 +45,11 @@ export class Drone {
 
       try {
         await this.manager.sendCommand(this.hostname, command.command);
-        await command.callback.waitFor(10000);
+        const timeoutMap: Record<string, number> = {
+          takeoff: 30000,
+          command: 5000,
+        };
+        await command.callback.waitFor(timeoutMap[command.command] || 10000);
       } catch (error) {
         const isTimeout =
           "message" in error && error.message.includes("Evt timeout");
@@ -69,7 +73,7 @@ export class Drone {
     if (this.commandBuffer.length > 0) {
       const command = this.commandBuffer[0];
       log.info(
-        `"${command.command}": ${message.trim()} (${
+        `[ANSWER] "${command.command}": ${message.trim()} (${
           Date.now() - command.time
         }ms)`,
         { drone: this.hostname }
