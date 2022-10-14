@@ -37,6 +37,8 @@ export class Server {
         this.connections.delete(ws);
         this.connectionIds.delete(ws);
       });
+
+      ws.send(JSON.stringify({ type: "id", payload: id }));
     });
   }
 

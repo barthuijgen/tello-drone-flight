@@ -30,13 +30,15 @@ export function useWebsocketClient(remoteIp: string) {
       setStatus("closed");
       reconnect();
     };
+  }, [remoteIp, reconnectAttempt]);
 
+  useEffect(() => {
     return () => {
       websocketRef.current?.close();
       websocketRef.current = null;
       onMessageRef.current.detach();
     };
-  }, [remoteIp, reconnectAttempt]);
+  }, []);
 
   const reconnect = useCallback(() => {
     reconnectTimeoutRef.current = setTimeout(() => {

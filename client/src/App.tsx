@@ -11,6 +11,9 @@ export const App = () => {
 
   useEffect(() => {
     onMessage.attach((message) => {
+      if (message.type === "id") {
+        console.log("Websocket connected", message.payload);
+      }
       if (message.type === "state") {
         setState(message.payload);
       }

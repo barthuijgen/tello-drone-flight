@@ -94,7 +94,7 @@ if (Deno.args.includes("--fly")) {
 
   flightManager.setFlightPlan(drone1.hostname, [
     {
-      command: commands.go(0, 0, 100, 70, "m1"),
+      command: commands.go(0, 0, 100, 70, 1),
     },
     {
       command: commands.curve(

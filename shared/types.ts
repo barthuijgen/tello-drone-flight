@@ -33,6 +33,7 @@ export interface State {
   drones: DroneState[];
 }
 
+type PayloadId = { type: "id"; payload: string };
 type PayloadState = { type: "state"; payload: State };
 type PayloadStart = { type: "start"; payload: { hostname: string } };
 type PayloadStop = { type: "stop"; payload: { hostname: string } };
@@ -47,6 +48,7 @@ type PayloadStream = {
 };
 
 export type Payload =
+  | PayloadId
   | PayloadState
   | PayloadStart
   | PayloadStop
