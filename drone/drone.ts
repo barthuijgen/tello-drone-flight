@@ -114,6 +114,12 @@ export class Drone {
     return await this.command(command);
   }
 
+  clearQueueExcept(command: string) {
+    this.commandBuffer = this.commandBuffer.filter(
+      (x, i) => i === 0 || x.command === command
+    );
+  }
+
   command(command: string): Promise<string> {
     return new Promise((resolve) => {
       log.info(`buffer command "${command}"`, {

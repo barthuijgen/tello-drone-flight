@@ -73,7 +73,10 @@ export class FlightManager {
       if (!drone) return;
 
       if (!step) {
-        if (drone.flying) drone.commandIfNotQueued(commands.land());
+        if (drone.flying) {
+          drone.clearQueueExcept(commands.land());
+          drone.commandIfNotQueued(commands.land());
+        }
         return;
       }
 
