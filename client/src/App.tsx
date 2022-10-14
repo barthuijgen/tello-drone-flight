@@ -11,7 +11,9 @@ fonts();
 export const App = () => {
   const [state, setState] = useState<State>();
   // const [commandInput, setCommandInput] = useState("");
-  const { send, onMessage, status } = useWebsocketClient("ws://127.0.0.1:8891");
+  const { send, onMessage, status } = useWebsocketClient(
+    `ws://${window.location.host.split(":")[0]}:8891`
+  );
 
   useEffect(() => {
     onMessage.attach((message) => {

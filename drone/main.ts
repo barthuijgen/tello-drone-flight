@@ -73,7 +73,7 @@ server.onMessage.attach((message) => {
     if (message.payload.hostname) {
       const drone = manager.getDrone(message.payload.hostname);
       if (message.payload.command === "land") {
-        drone.commandBuffer = [];
+        drone.clearQueueExcept("land");
       }
       drone.command(message.payload.command);
     }

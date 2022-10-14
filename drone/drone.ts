@@ -143,7 +143,10 @@ export class Drone {
           if (command === "streamon") this.streamEnabled = true;
           if (command === "streamoff") this.streamEnabled = false;
           if (command === "takeoff") this.flying = true;
-          if (command === "land") this.flying = false;
+          if (command === "land") {
+            this.flying = false;
+            this.commandBuffer = [];
+          }
           resolve("ok");
         } else if (response === "error") {
           log.info("command responded with error", {
