@@ -14,3 +14,7 @@ export function decodeStream(chars: string) {
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const getTimeMinuteSecond = () => {
+  return new Date().toTimeString().substr(3, 5);
+};

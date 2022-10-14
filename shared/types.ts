@@ -37,7 +37,10 @@ type PayloadId = { type: "id"; payload: string };
 type PayloadState = { type: "state"; payload: State };
 type PayloadStart = { type: "start"; payload: { hostname: string | null } };
 type PayloadStop = { type: "stop"; payload: { hostname: string | null } };
-type PayloadEmergency = { type: "emergency"; payload: { hostname?: string | null } };
+type PayloadEmergency = {
+  type: "emergency";
+  payload: { hostname?: string | null };
+};
 type PayloadCommand = {
   type: "command";
   payload: { hostname: string | null; command: string };
@@ -45,6 +48,10 @@ type PayloadCommand = {
 type PayloadStream = {
   type: "stream";
   payload: { hostname: string | null; enabled: boolean };
+};
+type PayloadFlightPlan = {
+  type: "flightplan";
+  payload: { plan: number };
 };
 
 export type Payload =
@@ -54,6 +61,7 @@ export type Payload =
   | PayloadStop
   | PayloadCommand
   | PayloadStream
-  | PayloadEmergency;
+  | PayloadEmergency
+  | PayloadFlightPlan;
 
 export type TConnectionStatus = "connecting" | "open" | "closed";

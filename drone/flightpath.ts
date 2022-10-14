@@ -36,6 +36,7 @@ export class FlightManager {
   constructor(public manager: DroneManager) {}
 
   setFlightPlan(drone: string, steps: FlightStep[]) {
+    this.stop();
     this.plans.set(drone, {
       drone: drone,
       executedStep: -1,
@@ -94,12 +95,12 @@ export class FlightManager {
           drone.telemetry.mid > -1 &&
           drone.commandBuffer.length === 0
         ) {
-          console.log(
-            "doWhileWaiting diff mid",
-            drone.telemetry.mid,
-            drone.telemetry.x,
-            drone.telemetry.y
-          );
+          // console.log(
+          //   "doWhileWaiting diff mid",
+          //   drone.telemetry.mid,
+          //   drone.telemetry.x,
+          //   drone.telemetry.y
+          // );
           if (
             Math.abs(drone.telemetry.x) > 10 ||
             Math.abs(drone.telemetry.y) > 10

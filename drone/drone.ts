@@ -3,6 +3,7 @@ import * as log from "log";
 import { commands } from "./commands.ts";
 import { DroneManager } from "./manager.ts";
 import { Telemetry } from "../shared/types.ts";
+import { getTimeMinuteSecond } from "./utils.ts";
 
 interface Command {
   command: string;
@@ -73,9 +74,9 @@ export class Drone {
     if (this.commandBuffer.length > 0) {
       const command = this.commandBuffer[0];
       log.info(
-        `[ANSWER] "${command.command}": ${message.trim()} (${
-          Date.now() - command.time
-        }ms)`,
+        `[ANSWER][${getTimeMinuteSecond()}] "${
+          command.command
+        }": ${message.trim()} (${Date.now() - command.time}ms)`,
         { drone: this.hostname }
       );
       this.commandBuffer[0].callback.post(message);
@@ -83,7 +84,7 @@ export class Drone {
   }
 
   onTelemetryMessage(message: string) {
-    this.active = true;
+    // this.active = true;
     this.lastTelemetry = Date.now();
     this.telemetry = message
       .trim()

@@ -35,7 +35,10 @@ export class DroneManager {
     // Prevent drones from sleeping by no commands
     setInterval(() => {
       this.drones.forEach(
-        (drone) => drone.active && drone.command(readCommands.battery)
+        (drone) =>
+          drone.active &&
+          drone.commandBuffer.length === 0 &&
+          drone.command(readCommands.battery)
       );
     }, 10000);
   }
