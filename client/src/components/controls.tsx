@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DroneState, State, TConnectionStatus } from "../../../shared/types";
 import { styled } from "../utils/style.config";
 
@@ -115,7 +115,7 @@ const ActivateButton = styled("g", {
 const AutoPilotButton = styled("g", {
   cursor: "pointer",
 });
-const batteryThreshold = 30;
+const batteryThreshold = 40;
 
 type TProps = {
   handlers: {
@@ -125,7 +125,7 @@ type TProps = {
   status: TConnectionStatus;
 };
 
-type TDirection = "up" | "down" | "left" | "right" | "forward" | "backward";
+type TDirection = "up" | "down" | "left" | "right" | "forward" | "back";
 
 export const Controls = (props: TProps) => {
   const { send } = props.handlers;
@@ -135,6 +135,13 @@ export const Controls = (props: TProps) => {
     hostname: null,
     telemetry: null,
   };
+
+  const refRight = useRef(null);
+  const refLeft = useRef(null);
+  const refUp = useRef(null);
+  const refDown = useRef(null);
+  const refForward = useRef(null);
+  const refBack = useRef(null);
   const [activeDrones, setActiveDrones] = useState<DroneState[]>([]);
   const [drone1, setDrone1] = useState<DroneState>(initDroneState);
   const [drone2, setDrone2] = useState<DroneState>(initDroneState);
@@ -210,7 +217,7 @@ export const Controls = (props: TProps) => {
         activeDrones.forEach((drone) => {
           send({
             type: "command",
-            payload: { hostname: drone.hostname, command: `${direction} 10` },
+            payload: { hostname: drone.hostname, command: `${direction} 40` },
           });
         });
       }
@@ -230,6 +237,25 @@ export const Controls = (props: TProps) => {
     send({ type: "flightplan", payload: { plan: 1 } });
   }, []);
 
+  const keyHandler = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "w") {
+        doMove("forward");
+      } else if (e.key === "a") {
+        doMove("left");
+      } else if (e.key === "s") {
+        doMove("back");
+      } else if (e.key === "d") {
+        doMove("right");
+      } else if (e.key === "i") {
+        doMove("up");
+      } else if (e.key === "o") {
+        doMove("down");
+      }
+    },
+    [doMove]
+  );
+
   useEffect(() => {
     const [drone1, drone2, drone3] = props.state.drones;
 
@@ -239,8 +265,12 @@ export const Controls = (props: TProps) => {
   }, [props.state]);
 
   useEffect(() => {
-    console.log("ACTIVE DRONE", activeDrones);
-  }, [activeDrones]);
+    document.addEventListener("keypress", keyHandler);
+
+    return () => {
+      document.removeEventListener("keypress", keyHandler);
+    };
+  });
 
   return (
     <SvgRoot
@@ -662,6 +692,7 @@ export const Controls = (props: TProps) => {
             height="40"
             rx="8"
             fill="black"
+            ref={refRight}
             onClick={() => doMove("right")}
           />
           <DirectionControl
@@ -672,6 +703,7 @@ export const Controls = (props: TProps) => {
             height="40"
             rx="8"
             fill="black"
+            ref={refLeft}
             onClick={() => doMove("left")}
           />
           <DirectionControl
@@ -683,6 +715,7 @@ export const Controls = (props: TProps) => {
             rx="8"
             transform="rotate(90 224 315)"
             fill="black"
+            ref={refDown}
             onClick={() => doMove("down")}
           />
           <DirectionControl
@@ -694,10 +727,12 @@ export const Controls = (props: TProps) => {
             rx="8"
             transform="rotate(90 224 205)"
             fill="black"
+            ref={refUp}
             onClick={() => doMove("up")}
           />
           <MovementControl
-            id="backward-control-button"
+            id="forward-control-button"
+            ref={refForward}
             onClick={() => doMove("forward")}
           >
             <path
@@ -713,8 +748,9 @@ export const Controls = (props: TProps) => {
             />
           </MovementControl>
           <MovementControl
-            id="forward-control-button"
-            onClick={() => doMove("backward")}
+            id="back-control-button"
+            ref={refBack}
+            onClick={() => doMove("back")}
           >
             <path
               className="bg"
